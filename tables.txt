@@ -1,0 +1,48 @@
+-- Create Database
+CREATE DATABASE IF NOT EXISTS campus_placement;
+USE campus_placement;
+
+-- Table: students
+CREATE TABLE IF NOT EXISTS students (
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    branch VARCHAR(50) NOT NULL,
+    percentage DOUBLE NOT NULL,
+    backlogs INT NOT NULL,
+    skills TEXT
+);
+
+-- Table: companies
+CREATE TABLE IF NOT EXISTS companies (
+    company_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    hrEmail VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    criteria_branch VARCHAR(50) NOT NULL,
+    min_percentage DOUBLE NOT NULL,
+    max_backlogs INT NOT NULL,
+    required_skills TEXT
+);
+
+-- Table: placement_drives
+CREATE TABLE IF NOT EXISTS placement_drives (
+    drive_id INT AUTO_INCREMENT PRIMARY KEY,
+    company_id INT NOT NULL,
+    date DATE NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+    FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE CASCADE
+);
+
+-- Table: applications
+CREATE TABLE IF NOT EXISTS applications (
+    app_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    drive_id INT NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+    FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (drive_id) REFERENCES placement_drives(drive_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_application (student_id, drive_id) -- Prevent duplicate applications
+);
